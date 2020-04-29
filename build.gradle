@@ -1,0 +1,88 @@
+buildscript {
+
+    ext {
+        apacheOozieVersion = '5.2.0'
+        apacheHadoopVersion = '3.2.1'
+        apacheHadoopCoreVersion = '1.2.1'
+
+        kubeBuildNumber = 12
+        buildTime = new Date().format("yyyy-MM-dd HH:mm:ss")
+        gitTagName = project.version
+    }
+
+    println "BuildNumber >>> " + kubeBuildNumber
+    println "BuildTime >>> " + buildTime
+
+    repositories {
+
+        mavenLocal()
+        mavenCentral()
+
+        maven {
+
+            url "http://repo.spring.io/milestone/"
+        }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+
+    dependencies {
+
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.7.RELEASE"
+        classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:2.0.0"
+        classpath "gradle.plugin.com.palantir.gradle.gitversion:gradle-git-version:0.11.0"
+    }
+}
+
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'maven'
+
+apply plugin: io.spring.gradle.dependencymanagement.DependencyManagementPlugin
+apply plugin: com.gorylenko.GitPropertiesPlugin
+apply plugin: com.palantir.gradle.gitversion.GitVersionPlugin
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+println "|||GIT State||| :-> $project.name"
+println "<<<"
+println "\tProject Name :-> $project.name"
+println "\tProject Version :-> $project.version"
+println "\tBuild No# :-> $project.kubeBuildNumber"
+println "\tNEW GIT <<<TAG Name>>> :-> $project.gitTagName"
+println ">>>"
+
+println "CALLER@Gradle@buildNumber >>> " + project.kubeBuildNumber
+println "CALLER@Gradle@BuildTime >>> " + project.buildTime
+println "CALLER@Gradle@GitTagName >>> " + project.gitTagName
+
+repositories {
+
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
+}
+
+dependencies {
+
+    compile group: 'org.apache.oozie', name: 'oozie-core', version: "${apacheOozieVersion}"
+    compile group: 'org.apache.oozie', name: 'oozie-client', version: "${apacheOozieVersion}"
+    compile group: 'org.apache.hadoop', name: 'hadoop-client', version: "${apacheHadoopVersion}"
+    compile group: 'org.apache.hadoop', name: 'hadoop-core', version: "${apacheHadoopCoreVersion}"
+    compile group: 'org.apache.hadoop', name: 'hadoop-common', version: "${apacheHadoopVersion}"
+
+    compile group: 'org.json', name: 'json', version: '20190722'
+
+    testCompile("junit:junit:4.12")
+}
+
+test {
+    systemProperties System.properties
+}
+
